@@ -1,0 +1,2 @@
+manifold3d>=3.0
+numpy>=1.21

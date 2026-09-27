@@ -1,4 +1,23 @@
-# RX 590 GME — a software replica
+# RX 590 GME — a replica
+
+This repo contains two replicas of the **AMD Radeon RX 590 GME**:
+
+1. **[A 3D-printable model of the card](model/)**, at 1:1 scale. It includes STL files ready to slice, a version split in two for normal-sized printers, and a half-scale desk model.
+2. **A software replica of the GPU**: a simulator built to the chip's specs that runs real shader programs (described below).
+
+![3D-printable RX 590 GME](docs/model_iso.png)
+
+## 3D-printable model
+
+| File | For |
+|---|---|
+| [`model/stl/rx590gme_1to1.stl`](model/stl/rx590gme_1to1.stl) | Full size in one piece (266 mm long; needs a large bed) |
+| [`model/stl/rx590gme_1to1_part1_bracket.stl`](model/stl/rx590gme_1to1_part1_bracket.stl) + [`part2_rear`](model/stl/rx590gme_1to1_part2_rear.stl) + [`pins_x2`](model/stl/rx590gme_1to1_pins_x2.stl) | Full size on any bed of at least 180 × 180 mm |
+| [`model/stl/rx590gme_1to2.stl`](model/stl/rx590gme_1to2.stl) | Half-scale desk model |
+
+Print with the backplate on the bed. Supports are only needed under the PCIe fingers. See [`model/README.md`](model/README.md) for print settings, assembly and how to customise the parametric model.
+
+## Software replica
 
 A software replica of the **AMD Radeon RX 590 GME** graphics card (Polaris 20 XTX, GCN 4). It is built to the card's specs and runs real shader programs:
 
@@ -18,7 +37,7 @@ Both images were rendered by kernels running on the replica.
 
 > This is a functional simulator written in Python with NumPy. It is not hardware, and it does not run AMD drivers or real game binaries. See [Accuracy](#accuracy) for what is modelled exactly and what is estimated.
 
-## Specifications
+### Specifications
 
 ```
 $ python -m rx590gme info
@@ -50,7 +69,7 @@ Board power        : 175 W
 
 All of these live in [`rx590gme/specs.py`](rx590gme/specs.py). The clocks are AMD's reference clocks; AIB partner cards ship with boost clocks of up to about 1460 MHz, and `--clock` lets you simulate any of them.
 
-## Quick start
+### Quick start
 
 ```bash
 pip install -e .            # needs Python 3.9+ and NumPy
@@ -78,7 +97,7 @@ Estimated time       : 16.3 µs (memory bound @ 1380 MHz)
 Throughput           : 32.2 GFLOPS (0.5% of peak), 193.1 GB/s (75.4% of peak)
 ```
 
-## Writing your own kernel
+### Writing your own kernel
 
 ```python
 import numpy as np
@@ -106,7 +125,7 @@ print(gpu.from_device(data, np.float32, 100)[:5])   # [ 0.  1.  4.  9. 16.]
 print(stats)
 ```
 
-### Kernel ABI
+#### Kernel ABI
 
 | Where | What |
 |---|---|
@@ -115,7 +134,7 @@ print(stats)
 | `v0`, `v1`, `v2` | Thread ID within the workgroup (x, y, z) |
 | `exec` | Starts with a lane set for each thread that exists. The last wave of a workgroup can be partial. |
 
-### Instruction set
+#### Instruction set
 
 | Class | Instructions |
 |---|---|
@@ -128,7 +147,7 @@ print(stats)
 
 Directives: `.kernel <name>` and `.lds <bytes>`. Comments start with `;` or `//`.
 
-## Accuracy
+### Accuracy
 
 **Modelled exactly**
 - Every lane of every wavefront executes. Results are bit-exact IEEE-754 single precision, and integers wrap at 32 bits.
@@ -151,6 +170,7 @@ Directives: `.kernel <name>` and `.lds <bytes>`. Comments start with `;` or `//`
 ## Layout
 
 ```
+model/          3D-printable model: generator, preview renderer, STL files
 rx590gme/
   specs.py      card specification and spec sheet
   isa.py        instruction set and two-pass assembler
@@ -161,7 +181,7 @@ rx590gme/
   demos.py      saxpy / mandelbrot / triangle workloads
   cli.py        command line interface
   kernels/      saxpy.s, mandelbrot.s, triangle.s
-tests/          pytest suite (pip install -e ".[test]" && pytest)
+tests/          pytest suite (pip install -e ".[test]" && pytest; model tests need manifold3d)
 ```
 
 ## Spec sources
