@@ -15,6 +15,8 @@ A 3D-printable, 1:1 model of a dual-fan AMD Radeon RX 590 GME graphics card. It 
 |---|---|
 | ![installed](../docs/kit_installed.png) | ![io](../docs/kit_io.png) |
 
+![Backplate side](../docs/kit_back.png)
+
 The kit stacks up like the real card. The backplate's pins pass through the PCB into the heatsink. The shroud's pegs then drop into the heatsink, so the layers line up by themselves. Bezels and accents sit in 0.6 mm recesses, and the two labels sit in recessed nameplate panels. The fan rotors turn on axles that are part of the heatsink, and each red hub cap is glued to its axle tip, not to the rotor. **The fans still spin after assembly.**
 
 ### Parts and colours
@@ -58,6 +60,8 @@ The four long parts (backplate, PCB, heatsink and shroud) are up to 255 mm long,
 | 07 | red | fan bezels, hub caps, accents |
 | 08 | white | both labels, DVI insert |
 | 09, 10 | yellow | heatsink halves |
+
+![All ten plates](../docs/kit_plates.png)
 
 To lay the kit out for a different bed, run `python plates.py --bed 256`. Beds of 272 mm or more get the long parts unsplit.
 

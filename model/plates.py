@@ -113,28 +113,56 @@ def write_3mf(path: Path, items: list[Placed]) -> None:
              f'<resources>{"".join(objects)}</resources><build>{"".join(build)}</build></model>')
     path.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
-        z.writestr("[Content_Types].xml", CONTENT_TYPES)
-        z.writestr("_rels/.rels", RELS)
-        z.writestr("3D/3dmodel.model", model)
+        for name, data in (("[Content_Types].xml", CONTENT_TYPES), ("_rels/.rels", RELS),
+                           ("3D/3dmodel.model", model)):
+            # Fixed timestamp so regenerating identical plates gives identical files.
+            info = zipfile.ZipInfo(name, date_time=(2020, 3, 1, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            z.writestr(info, data)
+
+
+def render_sheet(plates: list[tuple[str, str, list[Placed]]], bed: float, path: Path, tile: int = 360) -> None:
+    """Top-down picture of every plate, in its filament colour, on a grey bed."""
+    from render_preview import render_parts, write_png
+    cols = 4
+    rows = -(-len(plates) // cols)
+    sheet = np.full((rows * tile, cols * tile, 3), 246, dtype=np.uint8)
+    bed_plate = kit.box(0, 0, -1.0, bed, bed, -0.5)
+    for i, (_, colour, items) in enumerate(plates):
+        scene = [(kit_triangles(bed_plate), (205, 205, 210))]
+        scene += [(kit_triangles(item.solid), kit.PALETTE[colour]) for item in items]
+        img = render_parts(scene, tile, tile, 0, 89.9)
+        r, c = divmod(i, cols)
+        sheet[r * tile:(r + 1) * tile, c * tile:(c + 1) * tile] = img
+    write_png(path, sheet)
+
+
+def kit_triangles(solid: Manifold) -> np.ndarray:
+    mesh = solid.to_mesh()
+    verts = np.asarray(mesh.vert_properties, dtype=np.float64)[:, :3]
+    return verts[np.asarray(mesh.tri_verts, dtype=np.int64)]
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--bed", type=float, default=220.0, help="square bed size in mm (default 220)")
     parser.add_argument("-o", "--out", default=str(Path(__file__).with_name("kit") / "plates"))
+    parser.add_argument("--preview", metavar="PNG", help="also render all plates into one image")
     args = parser.parse_args()
 
     split = args.bed - 2 * MARGIN < 255      # the long parts need splitting on small beds
     pieces = print_pieces(split)
     out = Path(args.out)
-    number = 0
+    written = []
     for colour in (kit.BLACK, kit.RED, kit.WHITE, kit.YELLOW):
         group = [(n, s) for n, c, s in pieces if c == colour]
         for plate in pack(group, args.bed):
-            number += 1
-            path = out / f"plate_{number:02d}_{colour}.3mf"
+            path = out / f"plate_{len(written) + 1:02d}_{colour}.3mf"
             write_3mf(path, plate)
+            written.append((path.name, colour, plate))
             print(f"{path.name:26s} " + ", ".join(p.name for p in plate))
+    if args.preview:
+        render_sheet(written, args.bed, Path(args.preview))
 
 
 if __name__ == "__main__":
