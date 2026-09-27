@@ -15,7 +15,7 @@ A 3D-printable, 1:1 model of a dual-fan AMD Radeon RX 590 GME graphics card. It 
 |---|---|
 | ![installed](../docs/kit_installed.png) | ![io](../docs/kit_io.png) |
 
-The kit stacks up like the real card. The backplate's pins pass through the PCB into the heatsink. The shroud's pegs then drop into the heatsink, so the layers line up by themselves. Decals, bezels and accents sit in 0.6 mm recesses. The fan rotors turn on axles that are part of the heatsink, and each red hub cap is glued to its axle tip, not to the rotor. **The fans still spin after assembly.**
+The kit stacks up like the real card. The backplate's pins pass through the PCB into the heatsink. The shroud's pegs then drop into the heatsink, so the layers line up by themselves. Bezels and accents sit in 0.6 mm recesses, and the two labels sit in recessed nameplate panels. The fan rotors turn on axles that are part of the heatsink, and each red hub cap is glued to its axle tip, not to the rotor. **The fans still spin after assembly.**
 
 ### Parts and colours
 
@@ -44,6 +44,31 @@ Colour count: 8 black, 7 red, 3 white and 1 yellow. You can print everything in 
 
 The four long parts (backplate, PCB, heatsink and shroud) are up to 255 mm long, so they need a bed of about 260 mm or more. For smaller printers, [`kit/split/`](kit/split/) has each of those parts in two pieces, giving **23 parts in total, none larger than 163 mm**. That fits any bed of 180 × 180 mm or more. The joints are staggered: backplate at 90 mm, PCB at 150 mm, heatsink and shroud at 128 mm. Each layer is glued across the joints of the layers above and below it, so the finished card is stiff. The red middle accent hides the shroud joint.
 
+### Print plates (3MF), easiest option
+
+[`kit/plates/`](kit/plates/) has the whole kit already laid out on **10 plates for a 220 × 220 mm bed** (Adventurer 5M, Bambu A1, Ender 3 V3 and similar). Each plate holds one colour, and the long parts are already split. Open a plate, slice it and print it.
+
+| Plate | Colour | Parts |
+|---|---|---|
+| 01 | black | PCB front half (with the PCIe edge), I/O bracket, port block, 8-pin connector |
+| 02 | black | backplate rear half |
+| 03, 04 | black | shroud halves |
+| 05 | black | PCB rear half, backplate front half |
+| 06 | black | both fan rotors |
+| 07 | red | fan bezels, hub caps, accents |
+| 08 | white | both labels, DVI insert |
+| 09, 10 | yellow | heatsink halves |
+
+To lay the kit out for a different bed, run `python plates.py --bed 256`. Beds of 272 mm or more get the long parts unsplit.
+
+### If the parts look far too big in your slicer
+
+The files are in millimetres; the biggest split piece is 163 mm. STL files don't record their units, though, and some slicers assume inches, which makes everything **25.4× too big**. A 163 mm part then shows as about 4.1 m. Fixes:
+
+- **Use the 3MF plates.** 3MF files record millimetres, so this can't happen.
+- In the slicer, check the part's size and scale. It should be 100% and read in mm. If your slicer asks whether to convert from inches when you import, answer **no**.
+- As a last resort, scale by 3.937% to undo inches, or by 10% if it was read as centimetres.
+
 ### Assembly
 
 1. Put the backplate (1) on the table, pins up. Glue the white label (2) into the recess on its underside.
@@ -59,7 +84,7 @@ The four long parts (backplate, PCB, heatsink and shroud) are up to 255 mm long,
 
 Paint each part before assembly. The recesses give clean edges between colours without masking. All mating parts have 0.2 mm of clearance. If your printer runs tight, sand the pegs lightly.
 
-To regenerate or tweak the kit, run `python kit.py --split --previews ../docs`. Stack heights, peg positions and clearances are constants at the top of [`kit.py`](kit.py).
+To regenerate or tweak the kit, run `python kit.py --split --previews ../docs` and then `python plates.py`. Stack heights, peg positions and clearances are constants at the top of [`kit.py`](kit.py).
 
 ## One-piece model
 

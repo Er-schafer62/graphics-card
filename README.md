@@ -9,7 +9,7 @@ This repo contains two replicas of the **AMD Radeon RX 590 GME**:
 
 ## 3D-printable model
 
-**Paint-and-assemble kit** ([`model/kit/`](model/kit/)): 19 single-colour parts, all printable without supports. The fans still spin after assembly. [`model/kit/split/`](model/kit/split/) has the four long parts in two pieces each, for beds of 180 × 180 mm or more. See [the kit guide](model/README.md#paint-and-assemble-kit) for the parts list, colours and assembly steps.
+**Paint-and-assemble kit** ([`model/kit/`](model/kit/)): 19 single-colour parts, all printable without supports. The fans still spin after assembly. [`model/kit/split/`](model/kit/split/) has the four long parts in two pieces each, for beds of 180 × 180 mm or more. [`model/kit/plates/`](model/kit/plates/) has the whole kit laid out as ready-to-slice 3MF plates for a 220 × 220 mm bed. See [the kit guide](model/README.md#paint-and-assemble-kit) for the parts list, colours and assembly steps.
 
 ![Exploded kit](docs/kit_exploded.png)
 

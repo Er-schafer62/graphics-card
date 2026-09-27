@@ -98,6 +98,15 @@ def hole(x, y, z0, z1, r=1.5 + FIT) -> Manifold:
     return cyl_z(x, y, z0, z1, r, 24)
 
 
+def recess_outline(cs: CrossSection, margin: float = 1.0) -> CrossSection:
+    """Nameplate-style pocket for a label: a rounded rectangle around it.
+    (A letter-shaped pocket has pinch points that slicers read as holes.)"""
+    x0, y0, x1, y1 = cs.bounds()
+    grow = FIT + margin
+    plate = rounded_rect(x1 - x0 + 2 * grow, y1 - y0 + 2 * grow, 1.5)
+    return plate.translate(((x0 + x1) / 2, (y0 + y1) / 2))
+
+
 def label_2d(text: str, height: float, stroke: float) -> CrossSection:
     """Text sitting on an underline bar, so the whole label is one piece."""
     width = text_width(text, height)
@@ -158,7 +167,7 @@ def backplate() -> Manifold:
     plate = box(1, 2, 0, LENGTH - 2, Y1 - 1, BP_TOP)
     vents = union([rounded_rect(18, 2.6, 1.3).extrude(0.8).translate((x, y, -0.01))
                    for x in (160, 182, 204, 226) for y in np.arange(20, 106, 6.0)])
-    recess = bp_label_placed(BP_LABEL.offset(FIT, circular_segments=16), RECESS + 0.01, -0.01)
+    recess = bp_label_placed(recess_outline(BP_LABEL), RECESS + 0.01, -0.01)
     pins = union([peg(x, y, BP_TOP - 0.01, PCB_TOP + 2.4) for x, y in BACKPLATE_PINS])
     return plate - vents - recess + pins
 
@@ -200,7 +209,9 @@ def heatsink() -> Manifold:
     cuts += [hole(x, y, HS_TOP - 3.0, HS_TOP + 1) for x, y in SHROUD_PEGS]
     sink = block - union(cuts)
 
-    pipes = union([cyl_x(SKIRT_X1 + 2, NOTCH[0] - 1, Y1 - 4.2, z, 2.8) for z in (7.5, 14.0, 20.5)])
+    # Pipes sink 0.3 mm into the back of the fin slots: a tangent contact would
+    # leave a knife edge that slicers read as a hole in the mesh.
+    pipes = union([cyl_x(SKIRT_X1 + 2, NOTCH[0] - 1, Y1 - 4.5, z, 2.8) for z in (7.5, 14.0, 20.5)])
     axles = union([cyl_z(cx, FAN_Y, HS_TOP - 0.01, HS_TOP + 1.0, 5.0, 48) +
                    cyl_z(cx, FAN_Y, HS_TOP + 0.99, 35.3, 2.0, 32) for cx in FAN_X])
     return sink + pipes + axles
@@ -217,7 +228,7 @@ def shroud() -> Manifold:
     top = SHROUD_TOP - RECESS
     cuts += [annulus(FAN_HOLE_R - 1, 49.0 + FIT).extrude(RECESS + 1).translate((cx, FAN_Y, top)) for cx in FAN_X]
     cuts += [a.offset(FIT, JOIN_MITER).extrude(RECESS + 1).translate((0, 0, top)) for a in accent_shapes()]
-    cuts.append(top_label_placed(TOP_LABEL.offset(FIT, circular_segments=16), RECESS + 0.01, Y1 - RECESS))
+    cuts.append(top_label_placed(recess_outline(TOP_LABEL), RECESS + 0.01, Y1 - RECESS))
     body -= union(cuts)
     pegs = union([peg(x, y, HS_TOP - 2.6, HS_TOP + 0.01) for x, y in SHROUD_PEGS])
     return body + pegs
