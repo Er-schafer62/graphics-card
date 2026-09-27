@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rx590gme"
+version = "0.1.0"
+description = "A software replica of the AMD Radeon RX 590 GME (Polaris 20 XTX, GCN 4) GPU"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = ["numpy>=1.21"]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[project.scripts]
+rx590gme = "rx590gme.cli:main"
+
+[tool.setuptools]
+packages = ["rx590gme", "rx590gme.kernels"]
+
+[tool.setuptools.package-data]
+"rx590gme.kernels" = ["*.s"]
