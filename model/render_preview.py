@@ -45,6 +45,7 @@ def write_png(path: Path, rgb: np.ndarray) -> None:
 
 def render(tris: np.ndarray, width: int = 960, height: int = 600, azimuth: float = -35,
            elevation: float = 35, color=(214, 40, 40), ss: int = 2) -> np.ndarray:
+    """Render triangles (N, 3, 3). ``color`` is one RGB triple or one per triangle."""
     az, el = np.radians(azimuth), np.radians(elevation)
     # Camera basis: model z is "up" for the camera orbit.
     forward = -np.array([np.cos(el) * np.sin(az), -np.cos(el) * np.cos(az), np.sin(el)])
@@ -68,10 +69,11 @@ def render(tris: np.ndarray, width: int = 960, height: int = 600, azimuth: float
     light = -forward * 0.6 + up * 0.6 + right * 0.3
     light /= np.linalg.norm(light)
     shade = 0.28 + 0.72 * np.clip(normals @ light, 0, 1)
+    colors = np.broadcast_to(np.asarray(color, dtype=float), (len(tris), 3))
     facing = (normals @ forward) < 0
 
     zbuf = np.full((H, W), np.inf)
-    img = np.zeros((H, W), dtype=np.float64)
+    img = np.zeros((H, W, 3), dtype=np.float64)
     for i in np.nonzero(facing)[0]:
         x, y, z = X[i], Y[i], Z[i]
         x0, x1 = max(int(x.min()), 0), min(int(x.max()) + 1, W - 1)
@@ -90,13 +92,13 @@ def render(tris: np.ndarray, width: int = 960, height: int = 600, azimuth: float
         region = zbuf[y0:y1 + 1, x0:x1 + 1]
         hit = inside & (zz < region)
         region[hit] = zz[hit]
-        img[y0:y1 + 1, x0:x1 + 1][hit] = shade[i]
+        img[y0:y1 + 1, x0:x1 + 1][hit] = shade[i] * colors[i]
 
     covered = np.isfinite(zbuf)
     rgb = np.empty((H, W, 3))
     bg = np.array([246, 246, 248], dtype=float)
     rgb[:] = bg
-    rgb[covered] = img[covered, None] * np.array(color, dtype=float)
+    rgb[covered] = img[covered]
     # Darken depth discontinuities so edges read clearly.
     zf = np.where(covered, zbuf, zbuf[covered].max() + 50 if covered.any() else 0)
     edge = np.zeros((H, W), bool)
@@ -105,6 +107,13 @@ def render(tris: np.ndarray, width: int = 960, height: int = 600, azimuth: float
     rgb[edge] *= 0.45
     rgb = rgb.reshape(height, ss, width, ss, 3).mean(axis=(1, 3))
     return np.clip(rgb, 0, 255).astype(np.uint8)
+
+
+def render_parts(parts, width=960, height=600, azimuth=215, elevation=35) -> np.ndarray:
+    """Render several meshes, each ``(triangles, rgb)``, in one image."""
+    tris = np.concatenate([t for t, _ in parts])
+    colors = np.concatenate([np.tile(np.asarray(c, float), (len(t), 1)) for t, c in parts])
+    return render(tris, width, height, azimuth, elevation, colors)
 
 
 def main() -> None:

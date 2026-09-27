@@ -1,8 +1,69 @@
 # 3D-printable RX 590 GME
 
-A 3D-printable, 1:1 model of a dual-fan AMD Radeon RX 590 GME graphics card.
+A 3D-printable, 1:1 model of a dual-fan AMD Radeon RX 590 GME graphics card. It comes in two forms:
 
-![Model, fans and top edge](../docs/model_iso.png)
+- **[Paint-and-assemble kit](#paint-and-assemble-kit):** 19 parts, each printed and painted in one colour and then assembled. Recommended.
+- **[One-piece model](#one-piece-model):** the whole card as a single print, or two halves.
+
+## Paint-and-assemble kit
+
+![Assembled kit](../docs/kit_assembled.png)
+
+![Exploded kit](../docs/kit_exploded.png)
+
+| Installed (seen through a case window) | I/O bracket |
+|---|---|
+| ![installed](../docs/kit_installed.png) | ![io](../docs/kit_io.png) |
+
+The kit stacks up like the real card. The backplate's pins pass through the PCB into the heatsink. The shroud's pegs then drop into the heatsink, so the layers line up by themselves. Decals, bezels and accents sit in 0.6 mm recesses. The fan rotors turn on axles that are part of the heatsink, and each red hub cap is glued to its axle tip, not to the rotor. **The fans still spin after assembly.**
+
+### Parts and colours
+
+Files are in [`kit/`](kit/), named `NN_part_colour.stl` and already in print orientation. No part needs supports.
+
+| # | Part | Colour | Size (mm) | Notes |
+|---|---|---|---|---|
+| 1 | backplate | black | 252 × 118 × 6 | pins face up |
+| 2 | backplate_label | white | 92 × 13 × 1.4 | "RX 590 GME" on an underline bar; glues under the backplate |
+| 3 | pcb | black | 249 × 126 × 4 | includes the PCIe x16 edge; prints flat, so the fingers need no support. Optionally paint the fingers yellow/gold. |
+| 4 | heatsink | **yellow** | 236 × 118 × 32 | the grille seen through the fans, edge fins, heatpipes and fan axles |
+| 5 | shroud | black | 255 × 118 × 35 | printed upside down, top face on the bed |
+| 6, 7 | fan_rotor_1/2 | black | 88 × 88 × 10 | 9 blades each |
+| 8, 9 | hub_cap_1/2 | red | Ø 27 × 1.4 | glue to the axle tip only |
+| 10, 11 | fan_bezel_1/2 | red | Ø 98 × 1.4 | |
+| 12–14 | accent_front/middle/rear | red | 18 / 12 / 18 × 106 × 1.4 | the middle accent also covers the split line of the split shroud |
+| 15 | edge_label | white | 111 × 15 × 1.4 | top edge; reads correctly through a case window |
+| 16 | io_bracket | black | 41 × 120 × 11 | printed with its inner face on the bed |
+| 17 | port_block | black | 13 × 100 × 13 | DVI, HDMI and DisplayPort shells |
+| 18 | dvi_insert | white | 9 × 35 × 7 | the pin block inside the DVI port |
+| 19 | power_connector | black | 20 × 14 × 11 | 8-pin PCIe power |
+
+Colour count: 8 black, 7 red, 3 white and 1 yellow. You can print everything in one filament and paint it, or print in coloured filament and skip the painting.
+
+### Bed size
+
+The four long parts (backplate, PCB, heatsink and shroud) are up to 255 mm long, so they need a bed of about 260 mm or more. For smaller printers, [`kit/split/`](kit/split/) has each of those parts in two pieces, giving **23 parts in total, none larger than 163 mm**. That fits any bed of 180 × 180 mm or more. The joints are staggered: backplate at 90 mm, PCB at 150 mm, heatsink and shroud at 128 mm. Each layer is glued across the joints of the layers above and below it, so the finished card is stiff. The red middle accent hides the shroud joint.
+
+### Assembly
+
+1. Put the backplate (1) on the table, pins up. Glue the white label (2) into the recess on its underside.
+2. Drop the PCB (3) over the backplate pins.
+3. Press the heatsink (4) onto the same pins and glue it.
+4. Push the port block (17) and the 8-pin connector (19) onto the PCB pegs. Slide the white DVI insert (18) into the DVI shell.
+5. Lower the shroud (5) over the heatsink; its pegs locate it. Glue it.
+6. Slide the fan rotors (6, 7) onto the axles. Put a drop of glue on each axle tip (not on the rotor) and press a hub cap (8, 9) on.
+7. Glue the red bezels (10, 11) and accents (12–14) into their recesses on the shroud. Glue the white edge label (15) into the recess on the top edge.
+8. Fit the I/O bracket (16) over the port shells, then glue it to the port block and to the front of the shroud.
+
+**Putting it in a PCIe slot:** the edge connector's key position and thickness (1.6 mm) follow the PCIe spec. The distance from the fingers to the I/O bracket, however, is my estimate. I couldn't get the official drawing. Before gluing anything, dry-fit the bare PCB (3) in your motherboard slot. Then hold the bracket against the case's slot opening and check that they line up. If they don't, tell me how far off it is and the model can be adjusted. Don't use metallic or conductive paint on the fingers. PLA and ordinary paint are non-conductive and harmless in a slot.
+
+Paint each part before assembly. The recesses give clean edges between colours without masking. All mating parts have 0.2 mm of clearance. If your printer runs tight, sand the pegs lightly.
+
+To regenerate or tweak the kit, run `python kit.py --split --previews ../docs`. Stack heights, peg positions and clearances are constants at the top of [`kit.py`](kit.py).
+
+## One-piece model
+
+![One-piece model](../docs/model_iso.png)
 
 | Installed (seen through a case window) | I/O bracket |
 |---|---|
@@ -22,7 +83,7 @@ What's modelled:
 
 The dimensions follow a typical RX 590 GME dual-fan board such as PowerColor's Red Dragon: **255 mm long, 38 mm thick, dual-slot**. The card is about 121 mm tall above the PCIe edge. The styling is generic, with no vendor logos.
 
-## Files (in [`stl/`](stl/))
+### Files (in [`stl/`](stl/))
 
 | File | Size (x × y × z) | Use it when |
 |---|---|---|
@@ -33,7 +94,7 @@ The dimensions follow a typical RX 590 GME dual-fan board such as PowerColor's R
 
 Every file is a single watertight (manifold) solid, except the pins file, which contains two separate pins.
 
-## Printing
+### Printing
 
 - **Orientation:** print as exported, with the backplate flat on the bed and the fans facing up.
 - **Supports:** only needed under the PCIe edge connector, which sits 1.2 mm above the bed. "Supports on build plate only" handles it. Everything else is support-free. The port openings (up to 37 mm) and fin slots are short bridges.
@@ -41,9 +102,9 @@ Every file is a single watertight (manifold) solid, except the pins file, which 
 - **Material:** PLA or PETG. A black or dark grey print, with the accent panels and fan bezels painted red, looks like the real card.
 - **Assembly of the split version:** push the two pins into one half, add a little CA glue on the cut faces, and press the halves together.
 
-The edge connector has the real key position and thickness, so the model will sit in a PCIe slot for display. It is plastic, not a working card.
+The edge connector has the PCIe key position and thickness, but its distance from the bracket is estimated. See the kit's note on putting it in a PCIe slot before relying on it.
 
-## Customising
+### Customising
 
 The model is generated by [`rx590gme_model.py`](rx590gme_model.py) from a single `Card` dataclass. Length, thickness, fan size and position, blade count, bracket slots and pocket depth are all parameters. To regenerate the STLs:
 

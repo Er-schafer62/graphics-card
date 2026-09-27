@@ -2,12 +2,18 @@
 
 This repo contains two replicas of the **AMD Radeon RX 590 GME**:
 
-1. **[A 3D-printable model of the card](model/)**, at 1:1 scale. It includes STL files ready to slice, a version split in two for normal-sized printers, and a half-scale desk model.
+1. **[A 3D-printable model of the card](model/)** at 1:1 scale. It comes as a 19-part paint-and-assemble kit in red, black, white and yellow, or as a one-piece print. There's also a half-scale desk model.
 2. **A software replica of the GPU**: a simulator built to the chip's specs that runs real shader programs (described below).
 
-![3D-printable RX 590 GME](docs/model_iso.png)
+![3D-printable RX 590 GME kit](docs/kit_assembled.png)
 
 ## 3D-printable model
+
+**Paint-and-assemble kit** ([`model/kit/`](model/kit/)): 19 single-colour parts, all printable without supports. The fans still spin after assembly. [`model/kit/split/`](model/kit/split/) has the four long parts in two pieces each, for beds of 180 × 180 mm or more. See [the kit guide](model/README.md#paint-and-assemble-kit) for the parts list, colours and assembly steps.
+
+![Exploded kit](docs/kit_exploded.png)
+
+**One-piece model:**
 
 | File | For |
 |---|---|
@@ -170,7 +176,7 @@ Directives: `.kernel <name>` and `.lds <bytes>`. Comments start with `;` or `//`
 ## Layout
 
 ```
-model/          3D-printable model: generator, preview renderer, STL files
+model/          3D-printable model: kit + one-piece generators, preview renderer, STL files
 rx590gme/
   specs.py      card specification and spec sheet
   isa.py        instruction set and two-pass assembler
